@@ -1,12 +1,12 @@
 import OpenAI from "openai";
 
-if (!process.env.OPENAI_API_KEY) {
-  // We intentionally don't throw here to allow the app to build,
-  // but API calls will fail with a clear error.
-  console.warn("OPENAI_API_KEY is not set. API routes will fail.");
-}
+export function getOpenAIClient() {
+  const apiKey = process.env.OPENAI_API_KEY;
 
-export const openai = new OpenAI({
-  apiKey: process.env.OPENAI_API_KEY
-});
+  if (!apiKey) {
+    throw new Error("OPENAI_API_KEY is not configured");
+  }
+
+  return new OpenAI({ apiKey });
+}
 

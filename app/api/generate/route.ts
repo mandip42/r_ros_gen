@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { openai } from "@/lib/openai";
+import { getOpenAIClient } from "@/lib/openai";
 import { getPrompt } from "@/lib/prompts";
 import type { PlatformKey, Post } from "@/types";
 
@@ -46,17 +46,11 @@ export async function POST(request: Request) {
       );
     }
 
-    if (!process.env.OPENAI_API_KEY) {
-      return NextResponse.json(
-        { error: "OPENAI_API_KEY is not configured" },
-        { status: 500 }
-      );
-    }
-
     const results = await Promise.all(
       platforms.map(async (platform) => {
         const { system, user } = getPrompt(platform);
         try {
+          const openai = getOpenAIClient();
           const completion = await openai.chat.completions.create({
             model: "gpt-4o",
             temperature: 0.85,
